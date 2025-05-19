@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TalkScript v1.0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+      color: #f0f0f0;
+      overflow-x: hidden;
+      position: relative;
+      height: 100vh;
+    }
+    header {
+      background-color: #111;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 0 20px #00ffd5;
+      position: relative;
+      z-index: 10;
+    }
+    h1 {
+      margin: 0;
+      color: #00ffd5;
+    }
+    .download-section {
+      text-align: center;
+      margin: 3rem 0;
+      position: relative;
+      z-index: 10;
+    }
+    .download-btn {
+      padding: 1rem 2rem;
+      background-color: #00ffd5;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffd5, 0 0 30px #00ffd5 inset;
+      transition: background-color 0.3s ease;
+    }
+    .download-btn:hover {
+      background-color: #00ffa0;
+    }
+    .scroll-features {
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: #222;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 2rem auto;
+      width: 80%;
+      box-shadow: 0 0 10px #00ffd5;
+      position: relative;
+      z-index: 10;
+    }
+    .scroll-features ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .scroll-features li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #444;
+    }
+    .release-info {
+      text-align: center;
+      color: #00ffd5;
+      font-weight: bold;
+      margin-top: 1rem;
+      position: relative;
+      z-index: 10;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 1rem;
+      color: #888;
+      position: relative;
+      z-index: 10;
+    }
+    canvas#bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <header>
+    <h1>TalkScript v1.0</h1>
+  </header>
+  <div class="download-section">
+    <button class="download-btn">⬇ Download Version 1.0</button>
+    <p style="color: #888;">Other versions coming soon!</p>
+    <p class="release-info">Releasing on May 25th, 2025</p>
+  </div>
+  <div class="scroll-features">
+    <ul>
+      <li>🌟 Easy-to-use syntax</li>
+      <li>⚙️ Lightweight engine design</li>
+      <li>📜 Full Tosh-style commands</li>
+      <li>🖼️ GUI and project viewer</li>
+      <li>🎨 Custom color themes</li>
+      <li>📂 Project loading & saving</li>
+      <li>🎮 Live progress and execution</li>
+      <li>🧠 Smart suggestion system</li>
+    </ul>
+  </div>
+  <footer>
+    Made by: Akshansh Sharma 🧠💻
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+
+    const colors = ['#00ffd5', '#00ff88', '#0088ff', '#ff0088', '#ffaa00'];
+    const codeSamples = [
+      'let x = 10;',
+      'function run() {}',
+      'if (a > b) return a;',
+      'console.log("Hello World");',
+      'for (let i = 0; i < 5; i++) {}',
+      'const name = "TalkScript";',
+      'while (true) {}',
+      'return value;',
+      'let arr = [1, 2, 3];',
+      'class MyClass {}'
+    ];
+
+    let lines = [];
+
+    function randomChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    class CodeLine {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.baseX = this.x;
+        this.baseY = this.y;
+        this.text = randomChoice(codeSamples);
+        this.color = randomChoice(colors);
+        this.size = 12 + Math.random() * 8;
+        this.shiftX = (Math.random() - 0.5) * 0.5;
+        this.shiftY = (Math.random() - 0.5) * 0.5;
+      }
+      draw() {
+        ctx.font = `${this.size}px monospace`;
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.text, this.x, this.y);
+      }
+      update() {
+        // shift slowly around base position
+        this.baseX += this.shiftX * 0.3;
+        this.baseY += this.shiftY * 0.3;
+
+        // keep base within canvas
+        if (this.baseX < 0) this.baseX = canvas.width;
+        else if (this.baseX > canvas.width) this.baseX = 0;
+        if (this.baseY < 20) this.baseY = canvas.height;
+        else if (this.baseY > canvas.height) this.baseY = 20;
+
+        // ease towards base position
+        this.x += (this.baseX - this.x) * 0.05;
+        this.y += (this.baseY - this.y) * 0.05;
+      }
+    }
+
+    function init() {
+      lines = [];
+      for (let i = 0; i < 150; i++) {
+        lines.push(new CodeLine());
+      }
+    }
+
+    let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let line of lines) {
+        const dx = line.x - mouse.x;
+        const dy = line.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          // Move away from mouse
+          line.x += (dx / dist) * 6;
+          line.y += (dy / dist) * 6;
+        } else {
+          // Float and shift normally
+          line.update();
+        }
+        line.draw();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      init();
+    }
+
+    window.addEventListener('resize', resize);
+
+    resize();
+    animate();
+  </script>
+</body>
+</html>
